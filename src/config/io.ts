@@ -29,7 +29,7 @@ import { normalizeConfigPaths } from "./normalize-paths.js";
 import { resolveConfigPath, resolveStateDir } from "./paths.js";
 import { applyConfigOverrides } from "./runtime-overrides.js";
 import type { ClawdbotConfig, ConfigFileSnapshot, LegacyConfigIssue } from "./types.js";
-import { validateConfigObject } from "./validation.js";
+import { validateConfigObjectWithPlugins } from "./validation.js";
 import { ClawdbotSchema } from "./zod-schema.js";
 import { compareClawdbotVersions } from "./version.js";
 
@@ -377,7 +377,7 @@ export function createConfigIO(overrides: ConfigIoDeps = {}) {
       const resolvedConfigRaw = substituted;
       const legacyIssues = findLegacyConfigIssues(resolvedConfigRaw);
 
-      const validated = validateConfigObject(resolvedConfigRaw);
+      const validated = validateConfigObjectWithPlugins(resolvedConfigRaw);
       if (!validated.ok) {
         return {
           path: configPath,
