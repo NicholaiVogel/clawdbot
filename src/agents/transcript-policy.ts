@@ -117,7 +117,9 @@ export function resolveTranscriptPolicy(params: {
 
   return {
     sanitizeMode: isOpenAi ? "images-only" : needsNonImageSanitize ? "full" : "images-only",
-    sanitizeToolCallIds: !isOpenAi && sanitizeToolCallIds,
+    // Mistral requires strict9 tool-call IDs even when accessed through
+    // OpenAI-compatible proxy providers (NVIDIA NIM, OpenRouter, etc.)
+    sanitizeToolCallIds: isMistral || (!isOpenAi && sanitizeToolCallIds),
     toolCallIdMode,
     repairToolUseResultPairing,
     preserveSignatures: false,

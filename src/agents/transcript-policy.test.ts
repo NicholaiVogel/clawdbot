@@ -66,6 +66,27 @@ describe("resolveTranscriptPolicy", () => {
     expect(policy.sanitizeMode).toBe("full");
   });
 
+  it("enables strict9 for Mistral model via OpenAI-compatible provider", () => {
+    // Regression: #28492 — Mistral models accessed through openai-completions
+    // proxy providers (NVIDIA NIM, OpenRouter) still require strict9 tool-call IDs
+    const policy = resolveTranscriptPolicy({
+      modelApi: "openai-completions",
+      modelId: "mistralai/mistral-large-3-675b-instruct-2512",
+    });
+    expect(policy.sanitizeToolCallIds).toBe(true);
+    expect(policy.toolCallIdMode).toBe("strict9");
+  });
+
+  it("enables strict9 for Mistral model via named third-party provider", () => {
+    const policy = resolveTranscriptPolicy({
+      provider: "nvidia",
+      modelId: "mistralai/mixtral-8x22b-instruct",
+      modelApi: "openai-completions",
+    });
+    expect(policy.sanitizeToolCallIds).toBe(true);
+    expect(policy.toolCallIdMode).toBe("strict9");
+  });
+
   it("keeps OpenRouter on its existing turn-validation path", () => {
     const policy = resolveTranscriptPolicy({
       provider: "openrouter",
